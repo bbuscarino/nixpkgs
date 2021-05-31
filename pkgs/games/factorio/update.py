@@ -83,15 +83,16 @@ def generate_our_versions(factorio_versions: FactorioVersionsJSON) -> OurVersion
     for system in SYSTEMS:
         for release_type in RELEASE_TYPES:
             for release_channel in RELEASE_CHANNELS:
-                version = factorio_versions[release_channel.name][release_type.name]
-                this_release = {
-                    "name":         f"factorio_{release_type.name}_{system.tar_name}-{version}.tar.xz",
-                    "url":          f"https://factorio.com/get-download/{version}/{release_type.name}/{system.url_name}",
-                    "version":      version,
-                    "needsAuth":    release_type.needs_auth,
-                    "tarDirectory": system.tar_name,
-                }
-                output[system.nix_name][release_type.name][release_channel.name] = this_release
+                if release_channel.name in factorio_versions and release_type.name in factorio_versions[release_channel.name]:
+                    version = factorio_versions[release_channel.name][release_type.name]
+                    this_release = {
+                        "name":         f"factorio_{release_type.name}_{system.tar_name}-{version}.tar.xz",
+                        "url":          f"https://factorio.com/get-download/{version}/{release_type.name}/{system.url_name}",
+                        "version":      version,
+                        "needsAuth":    release_type.needs_auth,
+                        "tarDirectory": system.tar_name,
+                    }
+                    output[system.nix_name][release_type.name][release_channel.name] = this_release
     return output
 
 
